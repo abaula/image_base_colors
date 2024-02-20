@@ -9,9 +9,9 @@ fn main() {
 
     let img_path = "/home/dev/work/image_base_colors/images/800px-Cat_November_2010-1a.jpg";
     let histogram = Histogram::from_image(img_path);
-    let mut centers = HistogramKMeans::cluster(&histogram, 4, 100);
-    centers.sort_by(|a, b| b.weight.cmp(&a.weight));
-    dbg!(centers.into_iter().take(3).collect::<Vec<_>>());
+    let kmeans = HistogramKMeans::new();
+    let centers = kmeans.cluster(&histogram, 4, 100);
+    dbg!(centers);
 
 
     /*

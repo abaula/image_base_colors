@@ -4,11 +4,11 @@ use crate::rgba_color::RgbaColor;
 #[derive(Debug, Clone, Copy)]
 pub struct HistogramEntry {
     pub color: RgbaColor,
-    pub weight: i32,
+    pub weight: f32,
 }
 
 impl HistogramEntry {
-    pub fn new (color: RgbaColor, weight: i32) -> Self {
+    pub fn new (color: RgbaColor, weight: f32) -> Self {
         Self { color, weight, }
     }
 }
@@ -45,9 +45,9 @@ impl Histogram {
     pub fn append_color(&mut self, color: &RgbaColor) {
         let entry = self.map
             .entry(color.get_hash_key())
-            .or_insert(HistogramEntry::new(color.clone(), 0));
+            .or_insert(HistogramEntry::new(color.clone(), 0.0));
 
-        entry.weight += 1;
+        entry.weight += 1.0;
     }
 
     pub fn get_vec(&self) -> Vec<HistogramEntry> {

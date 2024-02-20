@@ -16,6 +16,10 @@ impl RgbaColor {
         Self { r, g, b, a }
     }
 
+    pub fn get_size() -> u32 {
+        4
+    }
+
     pub fn get_hash_key(&self) -> u64 {
         let mut hasher = SipHasher::new_with_key(HASHER_INIT_KEY);
 
@@ -25,5 +29,9 @@ impl RgbaColor {
         hasher.write(&self.a.to_ne_bytes());
 
         hasher.finish()
+    }
+
+    pub fn to_vec(&self) -> Vec<f32> {
+        vec![self.r, self.g, self.b, self.a]
     }
 }
