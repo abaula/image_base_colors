@@ -12,6 +12,7 @@ pub struct RgbaColor {
 }
 
 impl RgbaColor {
+
     pub fn new (r: f32, g: f32, b: f32, a: f32, ) -> Self {
         Self { r, g, b, a }
     }
@@ -21,6 +22,7 @@ impl RgbaColor {
     }
 
     pub fn get_hash_key(&self) -> u64 {
+
         let mut hasher = SipHasher::new_with_key(HASHER_INIT_KEY);
 
         hasher.write(&self.r.to_ne_bytes());

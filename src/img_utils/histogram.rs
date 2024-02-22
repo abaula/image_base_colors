@@ -51,10 +51,10 @@ pub fn from_image_path(path: &str) -> Histogram {
 pub fn from_image(img: &Rgba32FImage) -> Histogram {
     let mut histogram = Histogram::new();
 
-    for pixel in img.pixels() {
+    img.pixels().for_each(|pixel| {
         let color = RgbaColor::new(pixel[0], pixel[1], pixel[2], pixel[3]);
         histogram.push_color(&color);
-    }
+    });
 
     histogram
 }
