@@ -10,4 +10,8 @@ impl ColorPoint {
     pub fn new (color: RgbaColor, weight: f32) -> Self {
         Self { color, weight }
     }
+
+    pub fn color_dim() -> usize {
+        RgbaColor::dim()
+    }
 }

@@ -20,15 +20,14 @@ impl Histogram {
 
     pub fn push_color(&mut self, color: &RgbaColor) {
 
-        let entry = self
-            .map
-            .entry(color.get_hash_key())
+        let entry = self.map
+            .entry(color.hash_key())
             .or_insert(ColorPoint::new(color.clone(), 0_f32));
 
         entry.weight += 1_f32;
     }
 
-    pub fn get_vec(&self) -> Vec<ColorPoint> {
+    pub fn to_vec(&self) -> Vec<ColorPoint> {
 
         let map = &self.map;
 

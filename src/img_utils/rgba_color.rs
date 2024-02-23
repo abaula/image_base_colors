@@ -1,7 +1,4 @@
-use std::hash::Hasher;
-use siphasher::sip::SipHasher;
-
-const HASHER_INIT_KEY: &[u8; 16] = &[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+use std::hash::{DefaultHasher, Hasher};
 
 #[derive(Debug, Clone, Copy)]
 pub struct RgbaColor {
@@ -17,13 +14,23 @@ impl RgbaColor {
         Self { r, g, b, a }
     }
 
-    pub fn get_size() -> u32 {
+    pub fn from_vec (values: &Vec<f32>) -> Option<Self> {
+
+        match values.len() == Self::dim() {
+            true => {
+                Some(Self::new(values[0], values[1], values[2], values[3]))
+            },
+            false => None
+        }
+    }
+
+    pub fn dim() -> usize {
         4
     }
 
-    pub fn get_hash_key(&self) -> u64 {
+    pub fn hash_key(&self) -> u64 {
 
-        let mut hasher = SipHasher::new_with_key(HASHER_INIT_KEY);
+        let mut hasher = DefaultHasher::new();
 
         hasher.write(&self.r.to_ne_bytes());
         hasher.write(&self.g.to_ne_bytes());
