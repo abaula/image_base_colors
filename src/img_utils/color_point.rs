@@ -1,17 +1,17 @@
-use crate::img_utils::rgba_color::RgbaColor;
+use crate::img_utils::rgb_color::RgbColor;
 
 #[derive(Debug, Clone, Copy)]
 pub struct ColorPoint {
-    pub color: RgbaColor,
+    pub color: RgbColor,
     pub weight: f32,
 }
 
 impl ColorPoint {
-    pub fn new (color: RgbaColor, weight: f32) -> Self {
+    pub fn new (color: RgbColor, weight: f32) -> Self {
         Self { color, weight }
     }
 
     pub fn color_dim() -> usize {
-        RgbaColor::dim()
+        RgbColor::dim()
     }
 }

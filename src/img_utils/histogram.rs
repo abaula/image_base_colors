@@ -1,9 +1,9 @@
 use std::collections::HashMap;
-use image::Rgba32FImage;
+use image::RgbImage;
 
 use crate::{
     img_utils::color_point::ColorPoint,
-    img_utils::rgba_color::RgbaColor
+    img_utils::rgb_color::RgbColor
 };
 
 #[derive(Debug)]
@@ -18,7 +18,7 @@ impl Histogram {
         }
     }
 
-    pub fn push_color(&mut self, color: &RgbaColor) {
+    pub fn push_color(&mut self, color: &RgbColor) {
 
         let entry = self.map
             .entry(color.hash_key())
@@ -28,7 +28,6 @@ impl Histogram {
     }
 
     pub fn to_vec(&self) -> Vec<ColorPoint> {
-
         let map = &self.map;
 
         map.iter()
@@ -37,21 +36,11 @@ impl Histogram {
     }
 }
 
-pub fn from_image_path(path: &str) -> Histogram {
-
-    let img = match image::open(path) {
-        Ok(dyn_img) => dyn_img.to_rgba32f(),
-        Err(err) => panic!("error loading image: {err}"),
-    };
-
-    from_image(&img)
-}
-
-pub fn from_image(img: &Rgba32FImage) -> Histogram {
+pub fn from_image(img: &RgbImage) -> Histogram {
     let mut histogram = Histogram::new();
 
     img.pixels().for_each(|pixel| {
-        let color = RgbaColor::new(pixel[0], pixel[1], pixel[2], pixel[3]);
+        let color = RgbColor::new(pixel[0] as u32, pixel[1] as u32, pixel[2] as u32);
         histogram.push_color(&color);
     });
 
