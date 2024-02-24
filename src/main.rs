@@ -3,8 +3,33 @@ pub mod kmeans;
 
 use crate::img_utils::base_colors;
 
-fn main() {
-    run_local_base_colors();
+use axum::{
+    body::Body,
+    routing::get,
+    response::Json,
+    Router,
+};
+
+use rand::prelude::*;
+
+#[tokio::main]
+async fn main() {
+
+    // build our application with a single route
+    let app = Router::new()
+        .route("/", get(hello));
+
+    // run our app with hyper, listening globally on port 3000
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    axum::serve(listener, app).await.unwrap();
+
+    //run_local_base_colors();
+}
+
+async fn hello() -> String {
+    let mut rng = rand::thread_rng();
+    let msg = format!("Hello, World of {}!", rng.gen_range(0..10));
+    msg
 }
 
 fn run_local_base_colors() {
