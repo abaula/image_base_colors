@@ -1,5 +1,5 @@
 use std::cmp::min;
-use image::{Rgb, RgbImage};
+use image::{ImageError, Rgb, RgbImage};
 
 use crate::{
     img_utils::histogram,
@@ -8,24 +8,31 @@ use crate::{
 
 use super::color_point::ColorPoint;
 
-pub fn draw_base_colors(img_path_in: &str, img_path_out: &str, number_of_clusters: u32, max_try_count: u32) {
-
-    let img = open_image(img_path_in).unwrap();
-    let histogram = histogram::from_image(&img);
-
-    let mut centers = histogram_k_means::cluster(&histogram, number_of_clusters, max_try_count);
-    centers.sort_by(|a, b| b.weight.total_cmp(&a.weight));
-    draw_img_out(&img, &centers, img_path_out);
-
-    dbg!(centers);
+pub fn open_image(path: &str) -> Result<RgbImage, ImageError> {
+    match image::open(path) {
+        Ok(dyn_img) => {
+            Ok(dyn_img.to_rgb8())
+        },
+        Err(err) => Err(err),
+    }
 }
 
-fn draw_img_out(source_img: &RgbImage, centers: &Vec<ColorPoint>, img_path_out: &str) {
+pub fn kmeans_calculate(source_img: &RgbImage, number_of_clusters: u32, max_try_count: u32) -> Vec<ColorPoint> {
+
+    let histogram = histogram::from_image(&source_img);
+    let mut centers = histogram_k_means::cluster(&histogram, number_of_clusters, max_try_count);
+    centers.sort_by(|a, b| b.weight.total_cmp(&a.weight));
+
+    centers
+}
+
+pub fn draw(source_img: &RgbImage, base_colors: &Vec<ColorPoint>) -> RgbImage {
 
     let (width, height) = source_img.dimensions();
 
     // expand new image width.
-    let out_img_width = (width as f32 * 1.2_f32) as u32;
+    let expand_ratio = 1.2_f32;
+    let out_img_width = (width as f32 * expand_ratio) as u32;
     let mut out_img= RgbImage::new(out_img_width, height);
 
     // write source image to new one.
@@ -33,14 +40,15 @@ fn draw_img_out(source_img: &RgbImage, centers: &Vec<ColorPoint>, img_path_out: 
         out_img.put_pixel(x, y, pixel.clone());
     });
 
-    let mut sorted_centers = centers.clone();
-    sorted_centers.sort_by(|a, b| a.weight.total_cmp(&b.weight));
-    draw_dominant_color_area(&mut out_img, &sorted_centers, width, out_img_width, height);
+    // sort base colors.
+    let mut sorted_base_colors = base_colors.clone();
+    sorted_base_colors.sort_by(|a, b| a.weight.total_cmp(&b.weight));
+    draw_base_colors_area(&mut out_img, &sorted_base_colors, width, out_img_width, height);
 
-    out_img.save(img_path_out).unwrap();
+    out_img
 }
 
-fn draw_dominant_color_area(img: &mut RgbImage, centers: &Vec<ColorPoint>, left: u32, right: u32, height: u32) {
+fn draw_base_colors_area(img: &mut RgbImage, centers: &Vec<ColorPoint>, left: u32, right: u32, height: u32) {
 
     let mut y_top = 0_u32;
     let mut y_bottom = 0_u32;
@@ -57,13 +65,4 @@ fn draw_dominant_color_area(img: &mut RgbImage, centers: &Vec<ColorPoint>, left:
 
         y_top = y_bottom;
     });
-}
-
-fn open_image(path: &str) -> Option<RgbImage> {
-    match image::open(path) {
-        Ok(dyn_img) => {
-            Some(dyn_img.to_rgb8())
-        },
-        Err(err) => panic!("error loading image: {err}"),
-    }
 }

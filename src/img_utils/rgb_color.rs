@@ -1,4 +1,7 @@
-use std::hash::{DefaultHasher, Hasher};
+use std::{
+    cmp::Ordering,
+    hash::{DefaultHasher, Hasher}
+};
 
 #[derive(Debug, Clone, Copy)]
 pub struct RgbColor {
@@ -23,13 +26,19 @@ impl RgbColor {
         }
     }
 
-    pub fn from_f32_vec (values: &Vec<f32>) -> Option<Self> {
+    pub fn from_f32_vec (values: &Vec<f32>) -> Result<Self, String> {
 
-        match values.len() == Self::dim() {
-            true => {
-                Some(Self::new(values[0] as u32, values[1] as u32, values[2] as u32))
+        let expected_len = Self::dim();
+        let request_len = values.len();
+
+        match request_len.cmp(&expected_len) {
+            Ordering::Equal => {
+                Ok(Self::new(values[0] as u32, values[1] as u32, values[2] as u32))
             },
-            false => None
+            _ => {
+                let error = format!("Unable convert Vec<f32> to RgbColor<u32>, expected number of elements {expected_len} but got {request_len}.");
+                Err(error)
+            },
         }
     }
 

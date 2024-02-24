@@ -75,9 +75,14 @@ pub fn cluster(histogram: &Histogram,
 
     cluster_centers.iter().enumerate().for_each(|(cluster_number, center)| {
         let number_of_points_in_cluster = cluster_data.iter().filter(|&entry| entry.cluster_number == cluster_number as u32).count();
-        let color = RgbColor::from_f32_vec(center);
         let weight = number_of_points_in_cluster as f32 / total_number_of_points as f32;
-        centers.push(ColorPoint::new(color.unwrap(), weight));
+
+        match RgbColor::from_f32_vec(center) {
+            Ok(color) => {
+                centers.push(ColorPoint::new(color, weight));
+            },
+            Err(err) => println!("Unable to get Rgb color for cluster_number: {cluster_number}. Err: {err}"),
+        };
     });
 
     centers
