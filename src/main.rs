@@ -4,6 +4,10 @@ pub mod kmeans;
 use crate::img_utils::base_colors;
 
 fn main() {
+    run_local_base_colors();
+}
+
+fn run_local_base_colors() {
     //let img_name = "Two-horses-from-SS.png";
     let img_name = "800px-Cat_November_2010-1a.jpg";
 
