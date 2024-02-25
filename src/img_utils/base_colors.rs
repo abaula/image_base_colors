@@ -17,6 +17,16 @@ pub fn open_image(path: &str) -> Result<RgbImage, ImageError> {
     }
 }
 
+pub fn open_image_from_bytes(data: &Vec<u8>) -> Result<RgbImage, ImageError> {
+
+    match image::load_from_memory(data) {
+        Ok(dyn_img) => {
+            Ok(dyn_img.to_rgb8())
+        },
+        Err(err) => Err(err),
+    }
+}
+
 pub fn kmeans_calculate(source_img: &RgbImage, number_of_clusters: u32, max_try_count: u32) -> Vec<ColorPoint> {
 
     let histogram = histogram::from_image(&source_img);

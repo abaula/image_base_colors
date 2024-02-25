@@ -3,6 +3,9 @@ use std::{
     hash::{DefaultHasher, Hasher}
 };
 
+use serde::Serialize;
+
+#[derive(Serialize)]
 #[derive(Debug, Clone, Copy)]
 pub struct RgbColor {
     pub r: u32,
