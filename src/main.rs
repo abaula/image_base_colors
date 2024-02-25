@@ -49,7 +49,7 @@ async fn main() {
 }
 
 async fn hello() -> String {
-    String::from("Image base colors. v 1.0")
+    format!("Image base colors. Version: {}", env!("CARGO_PKG_VERSION"))
 }
 
 async fn info(Query(params): Query<HashMap<String, String>>, mut multipart: Multipart) -> impl IntoResponse {
