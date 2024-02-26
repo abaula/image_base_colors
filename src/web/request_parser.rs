@@ -46,14 +46,14 @@ fn get_number_of_clusters(params: &HashMap<String, String>) -> Option<u32> {
 
     const FIELD_NAME: &str = "number_of_clusters";
 
-    get_filed_value(params, FIELD_NAME)
+    get_filed_value_u32(params, FIELD_NAME)
 }
 
 fn get_max_try_count(params: &HashMap<String, String>) -> Option<u32> {
 
     const FIELD_NAME: &str = "max_try_count";
 
-    get_filed_value(params, FIELD_NAME)
+    get_filed_value_u32(params, FIELD_NAME)
 }
 
 async fn get_image_buffer(multipart: &mut Multipart) -> Option<(String, Vec<u8>)> {
@@ -88,9 +88,9 @@ async fn get_image_buffer(multipart: &mut Multipart) -> Option<(String, Vec<u8>)
 
 }
 
-fn get_filed_value(params: &HashMap<String, String>, field_name: &str) -> Option<u32> {
+fn get_filed_value_u32(params: &HashMap<String, String>, field_name: &str) -> Option<u32> {
 
-    let number_of_clusters_str = match params.get(field_name) {
+    let field_value_str = match params.get(field_name) {
         Some(value) => value,
         None => {
             println!("Param '{field_name}' not found.");
@@ -98,7 +98,7 @@ fn get_filed_value(params: &HashMap<String, String>, field_name: &str) -> Option
         },
     };
 
-    match number_of_clusters_str.parse::<u32>() {
+    match field_value_str.parse::<u32>() {
         Ok(number) => Some(number),
         Err(err) => {
             println!("Parse error: {err}");
