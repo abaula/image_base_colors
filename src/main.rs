@@ -3,12 +3,7 @@ pub mod kmeans;
 pub mod web;
 
 use std::collections::HashMap;
-
-use crate::{
-    img_utils::base_colors,
-    web::{ controller, request_parser::Request }
-};
-
+use crate::web::{ controller, request_parser::Request };
 use axum::{
     extract::{ DefaultBodyLimit, Json, Multipart, Query, },
     http::{header, StatusCode, },
@@ -26,6 +21,8 @@ async fn main() {
     // build our application with a single route
     let app = Router::new()
         .route("/", get(hello))
+        .route("/alive", get(status_ok))
+        .route("/ready", get(status_ok))
         .route("/info", post(info))
             .layer(DefaultBodyLimit::max(IMAGE_LIMIT_10MB))
         .route("/draw", post(draw))
@@ -44,12 +41,14 @@ async fn main() {
         Ok(_) => (),
         Err(err) => panic!("Server error: {err}")
     };
-
-    //run_local_base_colors();
 }
 
 async fn hello() -> String {
     format!("Image base colors. Version: {}", env!("CARGO_PKG_VERSION"))
+}
+
+async fn status_ok() -> StatusCode {
+    StatusCode::OK
 }
 
 async fn info(Query(params): Query<HashMap<String, String>>, mut multipart: Multipart) -> impl IntoResponse {
@@ -97,29 +96,4 @@ async fn draw(Query(params): Query<HashMap<String, String>>, mut multipart: Mult
         (header::CONTENT_DISPOSITION, format!("inline; filename=\"{}\"", request.file_name))],
         bytes,)
     )
-}
-
-fn _run_local_base_colors() {
-    //let img_name = "Two-horses-from-SS.png";
-    let img_name = "800px-Cat_November_2010-1a.jpg";
-
-    let number_of_clusters = 4;
-    let max_try_count = 30;
-
-    let img_path_in = format!("/home/dev/work/image_base_colors/images/{img_name}");
-    let img_path_out = format!("/home/dev/work/image_base_colors/images/__{img_name}.png");
-
-    let source_img = match base_colors::open_image(&img_path_in) {
-        Ok(image) => image,
-        Err(err) => panic!("Error: {err}"),
-    };
-
-    let base_colors = base_colors::kmeans_calculate(&source_img, number_of_clusters, max_try_count);
-    dbg!(&base_colors);
-    let result_img = base_colors::draw(&source_img, &base_colors);
-
-    match result_img.save(&img_path_out) {
-        Ok(_) => println!("New image saved to {img_path_out}"),
-        Err(err) => panic!("Error: {err}"),
-    };
 }
