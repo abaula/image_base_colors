@@ -12,6 +12,7 @@ use axum::{
     Router,
     body::Bytes,
 };
+use tokio::signal;
 
 #[tokio::main]
 async fn main() {
@@ -37,10 +38,36 @@ async fn main() {
     let socket_addr = listener.local_addr().unwrap();
     println!("Server is listening on {}:{}", &socket_addr.ip(), &socket_addr.port());
 
-    match axum::serve(listener, app).await {
-        Ok(_) => (),
-        Err(err) => panic!("Server error: {err}")
+    match axum::serve(listener, app)
+        .with_graceful_shutdown(shutdown_signal())
+        .await {
+            Ok(_) => (),
+            Err(err) => panic!("Server error: {err}")
+        };
+}
+
+async fn shutdown_signal() {
+    let ctrl_c = async {
+        signal::ctrl_c()
+            .await
+            .expect("failed to install Ctrl+C handler");
     };
+
+    #[cfg(unix)]
+    let terminate = async {
+        signal::unix::signal(signal::unix::SignalKind::terminate())
+            .expect("failed to install signal handler")
+            .recv()
+            .await;
+    };
+
+    #[cfg(not(unix))]
+    let terminate = std::future::pending::<()>();
+
+    tokio::select! {
+        _ = ctrl_c => {},
+        _ = terminate => {},
+    }
 }
 
 async fn hello() -> String {
