@@ -12,6 +12,6 @@ FROM scratch
 
 COPY --from=builder /usr/src/app/target/x86_64-unknown-linux-musl/release/image_base_colors /usr/local/bin/image_base_colors
 
-EXPOSE 3000
+EXPOSE 8080
 
 CMD ["image_base_colors"]
