@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use axum::extract::Multipart;
 
-
 pub struct Request {
     pub number_of_clusters: u32,
     pub max_try_count: u32,
@@ -18,10 +17,9 @@ impl Request {
         let max_try_count = get_max_try_count(&params)
             .unwrap_or(get_max_try_count_default());
 
-        let (name, buffer) = match get_image_buffer(multipart).await {
-            Some(value) => value,
-            None => return Err(String::from("Can't read image from request.")),
-        };
+        let (name, buffer) = get_image_buffer(multipart)
+            .await
+            .expect("Can't read image from request.");
 
         Ok(
             Request {
@@ -66,10 +64,7 @@ async fn get_image_buffer(multipart: &mut Multipart) -> Option<(String, Vec<u8>)
         },
     };
 
-    let field = match field_opt {
-        Some(value) => value,
-        None => return None,
-    };
+    let field = field_opt?;
 
     let name = match field.name() {
         Some(value) => String::from(value),

@@ -9,22 +9,19 @@ use crate::{
 use super::color_point::ColorPoint;
 
 pub fn open_image(path: &str) -> Result<RgbImage, ImageError> {
-    match image::open(path) {
-        Ok(dyn_img) => {
-            Ok(dyn_img.to_rgb8())
-        },
-        Err(err) => Err(err),
-    }
+
+    let image = image::open(path)?
+        .to_rgb8();
+
+    Ok(image)
 }
 
 pub fn open_image_from_bytes(data: &Vec<u8>) -> Result<RgbImage, ImageError> {
 
-    match image::load_from_memory(data) {
-        Ok(dyn_img) => {
-            Ok(dyn_img.to_rgb8())
-        },
-        Err(err) => Err(err),
-    }
+    let image = image::load_from_memory(data)?
+        .to_rgb8();
+
+    Ok(image)
 }
 
 pub fn kmeans_calculate(source_img: &RgbImage, number_of_clusters: u32, max_try_count: u32) -> Vec<ColorPoint> {

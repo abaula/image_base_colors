@@ -29,8 +29,8 @@ async fn main() {
         .route("/draw", post(draw))
             .layer(DefaultBodyLimit::max(IMAGE_LIMIT_10MB));
 
-    // run our app with hyper, listening globally on port 3000
-    let listener = match tokio::net::TcpListener::bind("0.0.0.0:3000").await {
+    // run our app with hyper, listening globally on port 8080
+    let listener = match tokio::net::TcpListener::bind("0.0.0.0:8080").await {
         Ok(lsn) => lsn,
         Err(err) => panic!("Bind error: {err}"),
     };
