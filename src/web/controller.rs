@@ -22,7 +22,7 @@ pub fn get_png_image_with_base_colors(buffer: &Vec<u8>, number_of_clusters: u32,
     let result_img = base_colors::draw(&source_img, &base_colors);
 
     let mut buff = Cursor::new(Vec::new());
-    result_img.write_to(&mut buff, ImageOutputFormat::Png).unwrap();
+    result_img.write_to(&mut buff, ImageOutputFormat::Png)?;
 
     Ok(buff.into_inner())
 }
