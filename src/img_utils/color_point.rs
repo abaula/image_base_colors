@@ -1,8 +1,7 @@
 use serde::Serialize;
 use crate::img_utils::rgb_color::RgbColor;
 
-#[derive(Serialize)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Serialize, Debug, Clone, Copy)]
 pub struct ColorPoint {
     pub color: RgbColor,
     pub weight: f32,
