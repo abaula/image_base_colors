@@ -17,9 +17,10 @@ impl Request {
         let max_try_count = get_max_try_count(&params)
             .unwrap_or(get_max_try_count_default());
 
-        let (name, buffer) = get_image_buffer(multipart)
-            .await
-            .expect("Can't read image from request.");
+        let (name, buffer) = match get_image_buffer(multipart).await {
+            Some(value) => value,
+            None => return Err(String::from("Can't read image from request."))
+        };
 
         Ok(
             Request {
