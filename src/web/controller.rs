@@ -10,6 +10,14 @@ use image::{ ImageError, ImageOutputFormat };
 use crate::img_utils::{ base_colors, color_point::ColorPoint };
 use crate::web::request_parser::Request;
 
+pub async fn hello() -> String {
+    format!("Image base colors. Version: {}", env!("CARGO_PKG_VERSION"))
+}
+
+pub async fn status_ok() -> StatusCode {
+    StatusCode::OK
+}
+
 pub async fn info(Query(params): Query<HashMap<String, String>>, mut multipart: Multipart) -> impl IntoResponse {
 
     let request = match Request::parse(&params, &mut multipart).await {

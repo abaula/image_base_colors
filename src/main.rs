@@ -4,7 +4,6 @@ pub mod web;
 
 use axum::{
     extract::DefaultBodyLimit,
-    http::StatusCode,
     routing::{ get, post, },
     Router,
 };
@@ -18,9 +17,9 @@ async fn main() {
 
     // build our application with a single route
     let app = Router::new()
-        .route("/", get(hello))
-        .route("/alive", get(status_ok))
-        .route("/ready", get(status_ok))
+        .route("/", get(controller::hello))
+        .route("/alive", get(controller::status_ok))
+        .route("/ready", get(controller::status_ok))
         .route("/info", post(controller::info))
             .layer(DefaultBodyLimit::max(IMAGE_LIMIT_10MB))
         .route("/draw", post(controller::draw))
@@ -65,12 +64,4 @@ async fn shutdown_signal() {
         _ = ctrl_c => {},
         _ = terminate => {},
     }
-}
-
-async fn hello() -> String {
-    format!("Image base colors. Version: {}", env!("CARGO_PKG_VERSION"))
-}
-
-async fn status_ok() -> StatusCode {
-    StatusCode::OK
 }

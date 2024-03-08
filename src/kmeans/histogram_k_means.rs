@@ -231,3 +231,19 @@ fn init_cluster_data(histogram: &Histogram,
 
     cluster_data
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn distance_success() {
+
+        let point_a = vec![1.0_f32; 4];
+        let point_b = vec![3.0_f32; 4];
+        let actual = distance(&point_a, &point_b);
+
+        assert_eq!(actual, 4_f32);
+    }
+}
