@@ -14,8 +14,12 @@ use crate::web::controller;
 #[tokio::main]
 async fn main() {
 
-    let app_port = env::var("APP_PORT")
-        .unwrap_or(String::from("80"));
+    const DEFAULT_PORT: u8 = 80;
+
+    let app_port = match env::var("APP_PORT") {
+        Ok(val) => val.is_empty().then(|| DEFAULT_PORT.to_string()).unwrap_or(val),
+        Err(_) => DEFAULT_PORT.to_string(),
+    };
 
     const IMAGE_LIMIT_10MB: usize = 1024 * 1024 * 10;
 
@@ -30,9 +34,9 @@ async fn main() {
             .layer(DefaultBodyLimit::max(IMAGE_LIMIT_10MB));
 
     let bind_addr = format!("0.0.0.0:{app_port}");
-    let listener = match tokio::net::TcpListener::bind(bind_addr).await {
+    let listener = match tokio::net::TcpListener::bind(&bind_addr).await {
         Ok(lsn) => lsn,
-        Err(err) => panic!("Bind error: {err}"),
+        Err(err) => panic!("Bind to {bind_addr} error: {err}"),
     };
 
     let socket_addr = listener.local_addr().unwrap();
