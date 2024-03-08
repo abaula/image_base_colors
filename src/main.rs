@@ -2,6 +2,7 @@ pub mod img_utils;
 pub mod kmeans;
 pub mod web;
 
+use std::env;
 use axum::{
     extract::DefaultBodyLimit,
     routing::{ get, post, },
@@ -12,6 +13,9 @@ use crate::web::controller;
 
 #[tokio::main]
 async fn main() {
+
+    let app_port = env::var("APP_PORT")
+        .unwrap_or(String::from("80"));
 
     const IMAGE_LIMIT_10MB: usize = 1024 * 1024 * 10;
 
@@ -25,8 +29,8 @@ async fn main() {
         .route("/draw", post(controller::draw))
             .layer(DefaultBodyLimit::max(IMAGE_LIMIT_10MB));
 
-    // run our app with hyper, listening globally on port 8080
-    let listener = match tokio::net::TcpListener::bind("0.0.0.0:8080").await {
+    let bind_addr = format!("0.0.0.0:{app_port}");
+    let listener = match tokio::net::TcpListener::bind(bind_addr).await {
         Ok(lsn) => lsn,
         Err(err) => panic!("Bind error: {err}"),
     };
