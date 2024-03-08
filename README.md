@@ -14,6 +14,24 @@ Use Dockerfile to build image.
 
 # Usage
 
+## About
+
+```bash
+curl --verbose 'http://localhost:8080'
+```
+
+## Alive
+
+```bash
+curl --verbose 'http://localhost:8080/alive'
+```
+
+## Ready
+
+```bash
+curl --verbose 'http://localhost:8080/ready'
+```
+
 ## Obtaining information about the dominant colors of a picture
 ```bash
 curl -F file_name=@/path/to/picture --verbose 'http://localhost:8080/info?number_of_clusters=4&max_try_count=30' | json_pp
