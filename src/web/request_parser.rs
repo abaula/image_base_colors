@@ -81,7 +81,6 @@ async fn get_image_buffer(multipart: &mut Multipart) -> Option<(String, Vec<u8>)
     };
 
     Some((name, buffer))
-
 }
 
 fn get_filed_value_u32(params: &HashMap<String, String>, field_name: &str) -> Option<u32> {
