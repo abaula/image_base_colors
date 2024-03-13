@@ -12,10 +12,10 @@ struct ClusterEntry {
 }
 
 impl ClusterEntry {
-    pub fn new(histogram_point: ColorPoint, cluster_number: u32) -> Self {
+    pub fn new(histogram_point: &ColorPoint, cluster_number: u32) -> Self {
         Self {
-            histogram_point,
             cluster_number,
+            histogram_point: histogram_point.clone(),
             weighted_colors: {
                 histogram_point
                     .color
@@ -232,7 +232,7 @@ fn init_cluster_data(histogram: &Histogram, number_of_clusters: usize) -> Vec<Cl
                 false => rng.gen_range(0..number_of_clusters),
             };
 
-            ClusterEntry::new(*color_point, cluster_number as u32)
+            ClusterEntry::new(color_point, cluster_number as u32)
         })
         .collect::<Vec<_>>();
 
