@@ -4,7 +4,7 @@ use std::{
     hash::{DefaultHasher, Hasher},
 };
 
-#[derive(Serialize, Debug, Clone, Copy)]
+#[derive(Serialize, Debug, Clone)]
 pub struct RgbColor {
     pub r: u32,
     pub g: u32,
