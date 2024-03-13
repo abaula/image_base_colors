@@ -16,14 +16,14 @@ impl RgbColor {
         Self { r, g, b }
     }
 
-    pub fn from_vec(values: &Vec<u32>) -> Option<Self> {
+    pub fn from_vec(values: &[u32]) -> Option<Self> {
         match values.len() == Self::dim() {
             true => Some(Self::new(values[0], values[1], values[2])),
             false => None,
         }
     }
 
-    pub fn from_f32_vec(values: &Vec<f32>) -> Result<Self, String> {
+    pub fn from_f32_vec(values: &[f32]) -> Result<Self, String> {
         let expected_len = Self::dim();
         let request_len = values.len();
 

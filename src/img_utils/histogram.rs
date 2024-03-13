@@ -8,6 +8,12 @@ pub struct Histogram {
     map: HashMap<u64, ColorPoint>,
 }
 
+impl Default for Histogram {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Histogram {
     pub fn new() -> Self {
         Self {
@@ -19,7 +25,7 @@ impl Histogram {
         let entry = self
             .map
             .entry(color.hash_key())
-            .or_insert(ColorPoint::new(color.clone(), 0_f32));
+            .or_insert(ColorPoint::new(*color, 0_f32));
 
         entry.weight += 1_f32;
     }
@@ -27,7 +33,7 @@ impl Histogram {
     pub fn to_vec(&self) -> Vec<ColorPoint> {
         let map = &self.map;
 
-        map.iter().map(|(_key, entry)| entry.clone()).collect()
+        map.iter().map(|(_key, entry)| *entry).collect()
     }
 }
 

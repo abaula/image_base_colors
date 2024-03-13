@@ -14,9 +14,9 @@ impl Request {
         multipart: &mut Multipart,
     ) -> Result<Request, String> {
         let number_of_clusters =
-            get_number_of_clusters(&params).unwrap_or(get_number_of_clusters_default());
+            get_number_of_clusters(params).unwrap_or(get_number_of_clusters_default());
 
-        let max_try_count = get_max_try_count(&params).unwrap_or(get_max_try_count_default());
+        let max_try_count = get_max_try_count(params).unwrap_or(get_max_try_count_default());
 
         let (name, buffer) = match get_image_buffer(multipart).await {
             Some(value) => value,

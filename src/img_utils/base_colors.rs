@@ -9,7 +9,7 @@ pub fn open_image(path: &str) -> Result<RgbImage, ImageError> {
     Ok(image)
 }
 
-pub fn open_image_from_bytes(data: &Vec<u8>) -> Result<RgbImage, ImageError> {
+pub fn open_image_from_bytes(data: &[u8]) -> Result<RgbImage, ImageError> {
     let image = image::load_from_memory(data)?.to_rgb8();
 
     Ok(image)
@@ -20,14 +20,14 @@ pub fn kmeans_calculate(
     number_of_clusters: u32,
     max_try_count: u32,
 ) -> Vec<ColorPoint> {
-    let histogram = histogram::from_image(&source_img);
+    let histogram = histogram::from_image(source_img);
     let mut centers = histogram_k_means::cluster(&histogram, number_of_clusters, max_try_count);
     centers.sort_by(|a, b| b.weight.total_cmp(&a.weight));
 
     centers
 }
 
-pub fn draw(source_img: &RgbImage, base_colors: &Vec<ColorPoint>) -> RgbImage {
+pub fn draw(source_img: &RgbImage, base_colors: &[ColorPoint]) -> RgbImage {
     let (width, height) = source_img.dimensions();
 
     // expand new image width.
@@ -37,11 +37,11 @@ pub fn draw(source_img: &RgbImage, base_colors: &Vec<ColorPoint>) -> RgbImage {
 
     // write source image to new one.
     source_img.enumerate_pixels().for_each(|(x, y, pixel)| {
-        out_img.put_pixel(x, y, pixel.clone());
+        out_img.put_pixel(x, y, *pixel);
     });
 
     // sort base colors.
-    let mut sorted_base_colors = base_colors.clone();
+    let mut sorted_base_colors = base_colors.to_vec();
     sorted_base_colors.sort_by(|a, b| a.weight.total_cmp(&b.weight));
     draw_base_colors_area(
         &mut out_img,
@@ -56,7 +56,7 @@ pub fn draw(source_img: &RgbImage, base_colors: &Vec<ColorPoint>) -> RgbImage {
 
 fn draw_base_colors_area(
     img: &mut RgbImage,
-    centers: &Vec<ColorPoint>,
+    centers: &[ColorPoint],
     left: u32,
     right: u32,
     height: u32,

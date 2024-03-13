@@ -21,7 +21,7 @@ impl ClusterEntry {
                     .color
                     .to_vec()
                     .iter()
-                    .map(|value| (*value as u32) * histogram_point.weight as u32)
+                    .map(|value| (*value) * histogram_point.weight as u32)
                     .collect::<Vec<_>>()
             },
         }
@@ -35,7 +35,7 @@ pub fn cluster(
 ) -> Vec<ColorPoint> {
     let mut cluster_data = init_cluster_data(histogram, number_of_clusters as usize);
 
-    match cluster_data.len() < 1 {
+    match cluster_data.is_empty() {
         true => return Vec::new(),
         false => (),
     }
@@ -91,13 +91,13 @@ pub fn cluster(
 }
 
 fn calc_cluster_centers(
-    cluster_data: &Vec<ClusterEntry>,
+    cluster_data: &[ClusterEntry],
     number_of_clusters: u32,
 ) -> Option<Vec<Vec<f32>>> {
     // Sum cluster weights.
     // And accumulate cluster centers sum.
     let mut cluster_weights = HashMap::new();
-    let mut cluster_centers = allocate_centers(number_of_clusters as u32);
+    let mut cluster_centers = allocate_centers(number_of_clusters);
 
     cluster_data.iter().for_each(|cluster_entry| {
         let cluster_number = &cluster_entry.cluster_number;
@@ -121,13 +121,12 @@ fn calc_cluster_centers(
         .iter_mut()
         .enumerate()
         .for_each(|(cluster_number, cluster_center)| {
-            match cluster_weights.get(&(cluster_number as u32)) {
-                Some(cluster_weight) => {
+            if let Some(cluster_weight) = cluster_weights.get(&(cluster_number as u32)) {
+                {
                     cluster_center.iter_mut().for_each(|center| {
                         *center /= cluster_weight;
                     });
                 }
-                _ => (),
             }
         });
 
@@ -135,8 +134,8 @@ fn calc_cluster_centers(
 }
 
 fn calc_data_clusters(
-    cluster_data: &Vec<ClusterEntry>,
-    cluster_centers: &Vec<Vec<f32>>,
+    cluster_data: &[ClusterEntry],
+    cluster_centers: &[Vec<f32>],
 ) -> Option<Vec<u32>> {
     let mut new_data_clusters = cluster_data
         .iter()
@@ -189,7 +188,7 @@ fn calc_data_clusters(
     Some(new_data_clusters)
 }
 
-fn distance(point_a: &Vec<f32>, point_b: &Vec<f32>) -> f32 {
+fn distance(point_a: &[f32], point_b: &[f32]) -> f32 {
     let mut sum_squared_diffs = 0_f32;
 
     point_a.iter().enumerate().for_each(|(i, _)| {
@@ -199,20 +198,18 @@ fn distance(point_a: &Vec<f32>, point_b: &Vec<f32>) -> f32 {
     sum_squared_diffs.sqrt()
 }
 
-fn min_distance_index(values: &Vec<f32>) -> usize {
+fn min_distance_index(values: &[f32]) -> usize {
     let mut index_of_min_value: usize = 0;
     let mut small_value = values[index_of_min_value];
 
-    values
-        .iter()
-        .enumerate()
-        .for_each(|(i, value)| match value.total_cmp(&small_value) {
-            Ordering::Less => {
+    values.iter().enumerate().for_each(|(i, value)| {
+        if value.total_cmp(&small_value) == Ordering::Less {
+            {
                 small_value = *value;
                 index_of_min_value = i;
             }
-            _ => (),
-        });
+        }
+    });
 
     index_of_min_value
 }
@@ -225,7 +222,7 @@ fn allocate_centers(num_clusters: u32) -> Vec<Vec<f32>> {
 fn init_cluster_data(histogram: &Histogram, number_of_clusters: usize) -> Vec<ClusterEntry> {
     let vec = histogram.to_vec();
 
-    match vec.len() < 1 {
+    match vec.is_empty() {
         true => return Vec::new(),
         false => (),
     }
@@ -241,7 +238,7 @@ fn init_cluster_data(histogram: &Histogram, number_of_clusters: usize) -> Vec<Cl
                 false => rng.gen_range(0..number_of_clusters),
             };
 
-            ClusterEntry::new(color_point.clone(), cluster_number as u32)
+            ClusterEntry::new(*color_point, cluster_number as u32)
         })
         .collect::<Vec<_>>();
 
