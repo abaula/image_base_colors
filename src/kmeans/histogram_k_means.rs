@@ -28,6 +28,7 @@ impl ClusterEntry {
     }
 }
 
+/// Calculate cluster centers.
 pub fn cluster(
     histogram: &Histogram,
     number_of_clusters: u32,
@@ -35,9 +36,8 @@ pub fn cluster(
 ) -> Vec<ColorPoint> {
     let mut cluster_data = init_cluster_data(histogram, number_of_clusters as usize);
 
-    match cluster_data.is_empty() {
-        true => return Vec::new(),
-        false => (),
+    if cluster_data.is_empty() {
+        return Vec::new();
     }
 
     let mut cluster_centers = allocate_centers(number_of_clusters);
@@ -161,28 +161,23 @@ fn calc_data_clusters(
             let new_cluster_number = min_distance_index(&distances);
 
             // apply new cluster number to point.
-            match entry.cluster_number != new_cluster_number as u32 {
-                true => {
-                    // note cluster changed.
-                    changed = true;
-                    new_data_clusters[entry_ix] = new_cluster_number as u32;
-                }
-                false => (),
+            if entry.cluster_number != new_cluster_number as u32 {
+                // note cluster changed.
+                changed = true;
+                new_data_clusters[entry_ix] = new_cluster_number as u32;
             }
         });
 
-    match !changed {
-        true => return None,
-        false => (),
+    if !changed {
+        return None;
     }
 
     // calc new number of clusters in data.
     let counts: HashSet<&u32> = HashSet::from_iter(new_data_clusters.iter());
 
     // if lost any cluster then return None.
-    match counts.len() < cluster_centers.len() {
-        true => return None,
-        false => (),
+    if counts.len() < cluster_centers.len() {
+        return None;
     }
 
     Some(new_data_clusters)
@@ -222,9 +217,8 @@ fn allocate_centers(num_clusters: u32) -> Vec<Vec<f32>> {
 fn init_cluster_data(histogram: &Histogram, number_of_clusters: usize) -> Vec<ClusterEntry> {
     let vec = histogram.to_vec();
 
-    match vec.is_empty() {
-        true => return Vec::new(),
-        false => (),
+    if vec.is_empty() {
+        return Vec::new();
     }
 
     let mut rng = rand::thread_rng();
