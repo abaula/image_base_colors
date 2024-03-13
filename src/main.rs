@@ -2,22 +2,24 @@ pub mod img_utils;
 pub mod kmeans;
 pub mod web;
 
-use std::env;
+use crate::web::controller;
 use axum::{
     extract::DefaultBodyLimit,
-    routing::{ get, post, },
+    routing::{get, post},
     Router,
 };
+use std::env;
 use tokio::signal;
-use crate::web::controller;
 
 #[tokio::main]
 async fn main() {
-
     const DEFAULT_PORT: u8 = 80;
 
     let app_port = match env::var("APP_PORT") {
-        Ok(val) => val.is_empty().then(|| DEFAULT_PORT.to_string()).unwrap_or(val),
+        Ok(val) => val
+            .is_empty()
+            .then(|| DEFAULT_PORT.to_string())
+            .unwrap_or(val),
         Err(_) => DEFAULT_PORT.to_string(),
     };
 
@@ -29,9 +31,9 @@ async fn main() {
         .route("/alive", get(controller::status_ok))
         .route("/ready", get(controller::status_ok))
         .route("/info", post(controller::info))
-            .layer(DefaultBodyLimit::max(IMAGE_LIMIT_10MB))
+        .layer(DefaultBodyLimit::max(IMAGE_LIMIT_10MB))
         .route("/draw", post(controller::draw))
-            .layer(DefaultBodyLimit::max(IMAGE_LIMIT_10MB));
+        .layer(DefaultBodyLimit::max(IMAGE_LIMIT_10MB));
 
     let bind_addr = format!("0.0.0.0:{app_port}");
     let listener = match tokio::net::TcpListener::bind(&bind_addr).await {
@@ -40,14 +42,19 @@ async fn main() {
     };
 
     let socket_addr = listener.local_addr().unwrap();
-    println!("Server is listening on {}:{}", &socket_addr.ip(), &socket_addr.port());
+    println!(
+        "Server is listening on {}:{}",
+        &socket_addr.ip(),
+        &socket_addr.port()
+    );
 
     match axum::serve(listener, app)
         .with_graceful_shutdown(shutdown_signal())
-        .await {
-            Ok(_) => (),
-            Err(err) => panic!("Server error: {err}")
-        };
+        .await
+    {
+        Ok(_) => (),
+        Err(err) => panic!("Server error: {err}"),
+    };
 }
 
 async fn shutdown_signal() {

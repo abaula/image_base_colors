@@ -1,10 +1,7 @@
-use std::collections::HashMap;
 use image::RgbImage;
+use std::collections::HashMap;
 
-use crate::{
-    img_utils::color_point::ColorPoint,
-    img_utils::rgb_color::RgbColor
-};
+use crate::{img_utils::color_point::ColorPoint, img_utils::rgb_color::RgbColor};
 
 #[derive(Debug)]
 pub struct Histogram {
@@ -19,8 +16,8 @@ impl Histogram {
     }
 
     pub fn push_color(&mut self, color: &RgbColor) {
-
-        let entry = self.map
+        let entry = self
+            .map
             .entry(color.hash_key())
             .or_insert(ColorPoint::new(color.clone(), 0_f32));
 
@@ -30,9 +27,7 @@ impl Histogram {
     pub fn to_vec(&self) -> Vec<ColorPoint> {
         let map = &self.map;
 
-        map.iter()
-            .map(|(_key, entry)| entry.clone())
-            .collect()
+        map.iter().map(|(_key, entry)| entry.clone()).collect()
     }
 }
 

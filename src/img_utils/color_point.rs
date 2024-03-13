@@ -1,5 +1,5 @@
-use serde::Serialize;
 use crate::img_utils::rgb_color::RgbColor;
+use serde::Serialize;
 
 #[derive(Serialize, Debug, Clone, Copy)]
 pub struct ColorPoint {
@@ -8,7 +8,7 @@ pub struct ColorPoint {
 }
 
 impl ColorPoint {
-    pub fn new (color: RgbColor, weight: f32) -> Self {
+    pub fn new(color: RgbColor, weight: f32) -> Self {
         Self { color, weight }
     }
 
