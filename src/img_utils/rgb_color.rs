@@ -1,12 +1,10 @@
+use serde::Serialize;
 use std::{
     cmp::Ordering,
-    hash::{DefaultHasher, Hasher}
+    hash::{DefaultHasher, Hasher},
 };
 
-use serde::Serialize;
-
-#[derive(Serialize)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Serialize, Debug, Clone, Copy)]
 pub struct RgbColor {
     pub r: u32,
     pub g: u32,
@@ -14,34 +12,31 @@ pub struct RgbColor {
 }
 
 impl RgbColor {
-
-    pub fn new (r: u32, g: u32, b: u32) -> Self {
+    pub fn new(r: u32, g: u32, b: u32) -> Self {
         Self { r, g, b }
     }
 
-    pub fn from_vec (values: &Vec<u32>) -> Option<Self> {
-
+    pub fn from_vec(values: &[u32]) -> Option<Self> {
         match values.len() == Self::dim() {
-            true => {
-                Some(Self::new(values[0], values[1], values[2]))
-            },
-            false => None
+            true => Some(Self::new(values[0], values[1], values[2])),
+            false => None,
         }
     }
 
-    pub fn from_f32_vec (values: &Vec<f32>) -> Result<Self, String> {
-
+    pub fn from_f32_vec(values: &[f32]) -> Result<Self, String> {
         let expected_len = Self::dim();
         let request_len = values.len();
 
         match request_len.cmp(&expected_len) {
-            Ordering::Equal => {
-                Ok(Self::new(values[0] as u32, values[1] as u32, values[2] as u32))
-            },
+            Ordering::Equal => Ok(Self::new(
+                values[0] as u32,
+                values[1] as u32,
+                values[2] as u32,
+            )),
             _ => {
                 let error = format!("Unable convert Vec<f32> to RgbColor<u32>, expected number of elements {expected_len} but got {request_len}.");
                 Err(error)
-            },
+            }
         }
     }
 
@@ -50,7 +45,6 @@ impl RgbColor {
     }
 
     pub fn hash_key(&self) -> u64 {
-
         let mut hasher = DefaultHasher::new();
 
         hasher.write(&self.r.to_ne_bytes());
