@@ -31,6 +31,7 @@ pub fn draw(source_img: &RgbImage, base_colors: &[ColorPoint]) -> RgbImage {
     let (width, height) = source_img.dimensions();
 
     // expand new image width.
+    // TODO move to global settings.
     let expand_ratio = 1.2_f32;
     let out_img_width = (width as f32 * expand_ratio) as u32;
     let mut out_img = RgbImage::new(out_img_width, height);
