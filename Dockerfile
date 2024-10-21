@@ -12,7 +12,7 @@ FROM scratch
 
 COPY --from=builder /usr/src/app/target/x86_64-unknown-linux-musl/release/image_base_colors /usr/local/bin/image_base_colors
 
-ENV APP_PORT=80
+ENV APP_PORT=8080
 EXPOSE ${APP_PORT}
 
 CMD ["image_base_colors"]
