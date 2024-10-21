@@ -13,7 +13,7 @@ use tokio::signal;
 
 #[tokio::main]
 async fn main() {
-    const DEFAULT_PORT: u8 = 80;
+    const DEFAULT_PORT: u16 = 8080;
 
     let app_port = match env::var("APP_PORT") {
         Ok(val) => val

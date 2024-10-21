@@ -19,7 +19,7 @@ podman build -t image-base-colors:1.0.0 .
 Create container.
 
 ```bash
-podman create --name image-base-colors -p 8080:80 localhost/image-base-colors:1.0.0
+podman create --name image-base-colors -p 8080:8080 localhost/image-base-colors:1.0.0
 ```
 
 Start container.
